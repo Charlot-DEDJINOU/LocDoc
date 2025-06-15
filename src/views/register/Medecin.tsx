@@ -10,32 +10,39 @@ import logoImage from '../../assets/logo.png';
 
 // Main doctor signup page component
 const DoctorSignup: React.FC = () => (
-  <div
-    className="relative min-h-screen flex items-center justify-center bg-cover bg-center"
-    style={{ backgroundImage: `url(${phoneImage})` }}
-  >
-    {/* Logo */}
-    <img
-      src={logoImage}
-      alt="LocDoc"
-      className="absolute top-6 left-6 h-8 md:h-10 z-10"
-    />
+  <div className="min-h-screen flex">
+    {/* Left illustration */}
+    <div className="relative flex-1 overflow-hidden">
+      <img
+        src={phoneImage}
+        alt="Illustration"
+        className="h-full w-full object-cover"
+      />
+    </div>
 
-    {/* Form container */}
-    <div className="relative w-full max-w-lg px-4 sm:px-6">
-      <div className="bg-transparent backdrop-blur-md rounded-2xl p-8 shadow-lg">
+    {/* Right form section */}
+    <div className="flex-1 flex items-center justify-center px-6 md:px-20 relative">
+      {/* Logo */}
+      <img
+        src={logoImage}
+        alt="LocDoc"
+        className="absolute top-6 left-6 h-8 md:h-10 z-20"
+      />
+
+      {/* Form container */}
+      <div className="bg-white bg-opacity-60 backdrop-blur-md p-8 rounded-2xl shadow-lg w-full max-w-lg transform -translate-x-12 z-10">
         {/* Header */}
         <h1 className="text-4xl md:text-5xl font-bold text-secondary mb-2">
           Compte <span className="text-green-600">Médecin!</span>
         </h1>
-        <p className="text-gray-100 mb-6">
+        <p className="text-gray-700 mb-6">
           Ajoutez gratuitement votre compte médecin sur LocDoc
         </p>
 
         <form className="space-y-6">
           {/* Informations section */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-200">Informations</h2>
+            <h2 className="text-lg font-semibold text-gray-800">Informations</h2>
             <Select
               placeholder="Spécialité médicale"
               options={[
@@ -53,7 +60,7 @@ const DoctorSignup: React.FC = () => (
 
           {/* Coordonnées section */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-200">Coordonnées</h2>
+            <h2 className="text-lg font-semibold text-gray-800">Coordonnées</h2>
             <Input type="email" placeholder="Courriel professionnel" />
             <Input type="text" placeholder="Nom du cabinet ou du lieu d’exercice" />
             <div className="grid grid-cols-2 gap-4">
@@ -64,7 +71,7 @@ const DoctorSignup: React.FC = () => (
 
           {/* Vérification & Sécurité section */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-200">
+            <h2 className="text-lg font-semibold text-gray-800">
               Vérification et Sécurité
             </h2>
             <FileInput placeholder="Uploadez votre dernier diplôme d'état" />
@@ -80,11 +87,11 @@ const DoctorSignup: React.FC = () => (
           <Button>Créer mon compte Médecin</Button>
 
           {/* Footer link */}
-          <p className="text-center text-gray-100">
+          <p className="text-center text-gray-700">
             Vous avez déjà un compte ?{' '}
             <Link
               to="/login"
-              className="font-semibold underline hover:text-white transition"
+              className="font-semibold underline hover:text-secondary transition"
             >
               Connectez-vous
             </Link>
