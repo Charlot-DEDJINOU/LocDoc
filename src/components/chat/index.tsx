@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MessageItem from './Message';
-import Sidebar from './SideBar';
+import Sidebar from "./Sidebar";
 import Header from './Header';
 import MessageInput from './MessageInput';
 

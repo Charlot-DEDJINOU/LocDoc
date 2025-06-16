@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { User, Bell, Menu, X } from 'lucide-react';
-import logo from '../../assets/LOGO.png';
+import logo from '../../assets/logo.png';
 
 type NavItem = {
   name: string;
