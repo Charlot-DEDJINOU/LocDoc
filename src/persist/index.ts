@@ -1,6 +1,6 @@
-// persist.js
+// persist.ts
 export const LocalStorageStore = {
-  saveState(key, state) {
+  saveState(key: string, state: unknown) {
     try {
       const serializedState = JSON.stringify(state);
       localStorage.setItem(key, serializedState);
@@ -9,7 +9,7 @@ export const LocalStorageStore = {
     }
   },
 
-  loadState(key) {
+  loadState(key: string): any {
     try {
       const serializedState = localStorage.getItem(key);
       return serializedState ? JSON.parse(serializedState) : undefined;
@@ -19,7 +19,7 @@ export const LocalStorageStore = {
     }
   },
 
-  clearState(key) {
+  clearState(key: string) {
     try {
       localStorage.removeItem(key);
     } catch (err) {
@@ -27,4 +27,3 @@ export const LocalStorageStore = {
     }
   },
 };
-

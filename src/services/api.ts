@@ -1,23 +1,39 @@
-// api.js
+// api.ts
 import { LocalStorageStore } from "../persist";
-// import store from "../store/store";
-// import { Autologout } from "./authService";
 
-const defaultHeaders = {
+const defaultHeaders: HeadersInit = {
   "Content-Type": "application/json",
   Accept: "application/json",
 };
 
-const api = async (method, url, { data, params, baseURL = "", withToken = false, isFileUpload = false } = {}) => {
+interface ApiOptions {
+  data?: any;
+  params?: Record<string, string>;
+  baseURL?: string;
+  withToken?: boolean;
+  isFileUpload?: boolean;
+}
+
+const api = async (
+  method: string,
+  url: string,
+  {
+    data,
+    params,
+    baseURL = "",
+    withToken = false,
+    isFileUpload = false,
+  }: ApiOptions = {}
+): Promise<any> => {
   const fullUrl = new URL(baseURL + url);
 
-  if (params && typeof params === "object") {
+  if (params) {
     Object.entries(params).forEach(([key, value]) =>
       fullUrl.searchParams.append(key, value)
     );
   }
 
-  const headers = { ...defaultHeaders };
+  const headers: HeadersInit = { ...defaultHeaders };
 
   if (withToken) {
     const token = LocalStorageStore.loadState("appState")?.auth?.token;
@@ -27,10 +43,10 @@ const api = async (method, url, { data, params, baseURL = "", withToken = false,
   }
 
   if (isFileUpload) {
-    delete headers["Content-Type"]; // Laisser le navigateur gérer FormData
+    delete headers["Content-Type"];
   }
 
-  const config = {
+  const config: RequestInit = {
     method,
     headers,
   };
@@ -40,19 +56,17 @@ const api = async (method, url, { data, params, baseURL = "", withToken = false,
   }
 
   try {
-    const response = await fetch(fullUrl, config);
+    const response = await fetch(fullUrl.toString(), config);
     if (!response.ok) {
-      if (response.status === 401) {
-        store.dispatch(Autologout());
-      }
       const errorData = await response.json();
       throw errorData;
     }
 
     const contentType = response.headers.get("Content-Type");
-    if (contentType && contentType.includes("application/json")) {
+    if (contentType?.includes("application/json")) {
       return await response.json();
     }
+
     return await response.text();
   } catch (error) {
     return Promise.reject(error);
@@ -60,4 +74,3 @@ const api = async (method, url, { data, params, baseURL = "", withToken = false,
 };
 
 export default api;
-
