@@ -1,3 +1,5 @@
+import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Calendar,
   Users,
@@ -7,21 +9,22 @@ import {
   SearchCheck,
   Star,
 } from 'lucide-react';
-import Button from '../../commons/Button';
-import React from 'react';
 
 interface MenuItem {
   icon: React.ElementType;
   label: string;
-  active?: boolean;
+  route: string;
 }
 
 const Sidebar: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const menuItems: MenuItem[] = [
-    { icon: Star, label: "Dasshboard", active: true },
-    { icon: Users, label: "Je suis docteur", active: false },
-    { icon: SearchCheck, label: "Rechercher un docteur", active: false },
-    { icon: Calendar, label: "Prendre RDV", active: false },
+    { icon: Star, label: 'Dashboard', route: '/dashboard' },
+    { icon: Users, label: 'Je suis docteur', route: '/docteur/register' },
+    { icon: SearchCheck, label: 'Rechercher un docteur', route: '/search' },
+    { icon: Calendar, label: 'Prendre RDV', route: '/rdv' },
   ];
 
   return (
@@ -36,17 +39,19 @@ const Sidebar: React.FC = () => {
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
         <nav className="space-y-1">
           {menuItems.map((item, idx) => {
-            const isActive = item.active;
+            const isActive = location.pathname === item.route;
+            const Icon = item.icon;
             return (
               <div
                 key={idx}
+                onClick={() => navigate(item.route)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer transition-all group ${
                   isActive
                     ? 'bg-blue-100 text-blue-600 border-l-4 border-blue-600'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-blue-500'
                 }`}
               >
-                <item.icon className="w-5 h-5" />
+                <Icon className="w-5 h-5" />
                 <span className="font-medium">{item.label}</span>
               </div>
             );
@@ -56,11 +61,17 @@ const Sidebar: React.FC = () => {
 
       {/* Bottom section */}
       <div className="border-t border-gray-100 px-4 py-4 space-y-2">
-        <div className="flex items-center gap-3 p-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-blue-500 cursor-pointer transition-colors">
+        <div
+          onClick={() => navigate('/profile')}
+          className="flex items-center gap-3 p-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-blue-500 cursor-pointer transition-colors"
+        >
           <User className="w-5 h-5" />
           <span>Profil</span>
         </div>
-        <div className="flex items-center gap-3 p-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-blue-500 cursor-pointer transition-colors">
+        <div
+          onClick={() => navigate('/settings')}
+          className="flex items-center gap-3 p-3 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-blue-500 cursor-pointer transition-colors"
+        >
           <Settings className="w-5 h-5" />
           <span>Paramètres</span>
         </div>

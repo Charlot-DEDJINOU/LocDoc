@@ -96,7 +96,7 @@ const Header: React.FC = () => {
           )}
 
           <NavLink
-            to={isLoggedIn ? '/logout' : '/signup'}
+            to={isLoggedIn ? '/' : '/register'}
             className="
               bg-gradient-to-r from-purple-500 to-blue-400
               text-white text-sm font-medium

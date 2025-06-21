@@ -21,16 +21,17 @@ const PatientSignup: React.FC = () => {
     motDePasse: '',
     confirmMotDePasse: '',
     accepteConditions: false,
+    role: 'patient', // 👈 Ajout du rôle
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
@@ -44,14 +45,14 @@ const PatientSignup: React.FC = () => {
 
     const payload = {
       email: formData.email,
-      username: formData.nom.toLowerCase() + formData.prenoms.toLowerCase(), // exemple
+      username: formData.nom.toLowerCase() + formData.prenoms.toLowerCase(),
       password: formData.motDePasse,
       first_name: formData.prenoms,
       last_name: formData.nom,
       date_naissance: formData.dateNaissance,
       sexe: formData.genre === 'masculin' ? 'M' : 'F',
       telephone: formData.telephone,
-      role: ['patient'],
+      role: [formData.role],
       address: {
         street: '123 Rue de la Paix',
         city: 'Paris',
@@ -65,11 +66,15 @@ const PatientSignup: React.FC = () => {
     try {
       setLoading(true);
       const res = await post('/auth/register', payload, import.meta.env.VITE_API_URL, false);
-
-      console.log(res);
+      console.log(res)
       setUser(res.user);
       setToken(res.token);
-      navigate('/dashboard');
+
+      if (formData.role === 'doctor') {
+        navigate('/docteur/register');
+      } else {
+        navigate('/login');
+      }
     } catch (error) {
       console.error('Erreur lors de l’inscription:', error);
       alert("Une erreur est survenue pendant l’inscription.");
@@ -90,7 +95,7 @@ const PatientSignup: React.FC = () => {
       <div className="flex items-center min-h-screen px-4 py-8">
         <div className="max-w-6xl mx-auto w-full">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="hidden lg:block">{/* Illustration ici si souhaitée */}</div>
+            <div className="hidden lg:block">{/* illustration possible */}</div>
 
             <div className="bg-white bg-opacity-90 rounded-3xl p-8 shadow-2xl backdrop-blur-sm">
               <div className="text-center mb-8">
@@ -186,6 +191,20 @@ const PatientSignup: React.FC = () => {
                 </div>
 
                 <div>
+                  <h3 className="text-lg font-semibold text-gray-700 mb-4">Type de compte</h3>
+                  <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleInputChange}
+                    className="w-full bg-white bg-opacity-80 border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
+                    required
+                  >
+                    <option value="patient">Patient</option>
+                    <option value="doctor">Docteur</option>
+                  </select>
+                </div>
+
+                <div>
                   <h3 className="text-lg font-semibold text-gray-700 mb-4">Mot de passe</h3>
                   <div className="space-y-4">
                     <div className="relative">
@@ -236,7 +255,7 @@ const PatientSignup: React.FC = () => {
                 />
 
                 <Button onClick={handleSubmit} disabled={!formData.accepteConditions}>
-                  Créer mon compte patient
+                  Créer mon compte
                 </Button>
 
                 <div className="text-center">

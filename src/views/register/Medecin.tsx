@@ -60,7 +60,7 @@ const DoctorSignup: React.FC = () => {
 
     try {
       const payload = {
-        id: "354654s3d5435sd",
+        id: "685628cadda795498113ae53",
         email: form.email,
         specialties: [form.specialties],
         description: form.description,
@@ -68,8 +68,9 @@ const DoctorSignup: React.FC = () => {
         rating: 0
       };
 
-      const res = await post('/doctors', payload);
+      const res = await post('/doctors/', payload, import.meta.env.VITE_API_URL, false);
 
+      console.log(res)
       setUser(res.user);
       setToken(res.token);
       navigate('/docteur/dashboard');
