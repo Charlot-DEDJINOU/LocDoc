@@ -22,7 +22,7 @@ const navItemsLoggedIn: NavItem[] = [
 
 const Header: React.FC = () => {
   // simulate login state
-  const [isLoggedIn] = useState<boolean>(true);
+  const [isLoggedIn] = useState<boolean>(false);
   const notificationsCount = 3; // statique pour la démo
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
 

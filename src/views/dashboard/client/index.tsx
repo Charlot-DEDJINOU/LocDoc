@@ -1,47 +1,65 @@
 import React from 'react';
-import { Search } from 'lucide-react';
-import Messages from '../../../components/dashboard/patient/Messages';
-import AppointmentChart from '../../../components/dashboard/patient/AppointmentChart';
-import Calendar from '../../../components/dashboard/patient/Calendar';
-import Appointments from '../../../components/dashboard/patient/Appointments';
-import Doctors from '../../../components/dashboard/patient/Doctors';
-import Input from '../../../components/commons/Input';
 import Sidebar from '../../../components/dashboard/patient/Sidebar';
 
-// Main Dashboard Component
 const PatientDashboard: React.FC = () => {
+  // Ces données pourraient venir de l'authStore ou d'une API
+  const patient = {
+    nom: 'YENONMON',
+    prenom: 'Gbèto',
+    groupeSanguin: 'O+',
+    facteurRhesus: 'Rh+',
+    derniereConsultation: '2024-12-12',
+    traitements: [
+      { nom: 'Paracétamol 500mg', date: '2024-11-05' },
+      { nom: 'Amoxicilline', date: '2024-10-22' },
+    ],
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-100 flex">
       <Sidebar />
-      
-      <div className="flex-1 p-6">
-        {/* Header */}
-        <div className="mb-6">
-          <Input
-            icon={Search}
-            placeholder="Rechercher un généraliste ou un spécialiste..."
-            className="max-w-md"
-          />
+
+      <div className="flex-1 p-8">
+        {/* En-tête */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">
+            Bonjour, <span className="text-primary">{patient.prenom} {patient.nom}</span>
+          </h1>
+          <p className="text-gray-600">Bienvenue sur votre espace personnel</p>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column */}
-          <div className="space-y-6">
-            <AppointmentChart />
-            <Messages />
+        {/* Infos patient */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+          <div className="bg-white p-6 rounded-2xl shadow-md">
+            <h2 className="text-lg font-semibold text-gray-700 mb-2">Groupe sanguin</h2>
+            <p className="text-2xl font-bold text-primary">{patient.groupeSanguin}</p>
           </div>
 
-          {/* Center Column */}
-          <div className="space-y-6">
-            <Calendar />
-            <Appointments />
+          <div className="bg-white p-6 rounded-2xl shadow-md">
+            <h2 className="text-lg font-semibold text-gray-700 mb-2">Facteur Rhésus</h2>
+            <p className="text-2xl font-bold text-primary">{patient.facteurRhesus}</p>
           </div>
 
-          {/* Right Column */}
-          <div className="space-y-6">
-            <Doctors />
+          <div className="bg-white p-6 rounded-2xl shadow-md">
+            <h2 className="text-lg font-semibold text-gray-700 mb-2">Dernière consultation</h2>
+            <p className="text-2xl font-bold text-primary">{patient.derniereConsultation}</p>
           </div>
+        </div>
+
+        {/* Liste des traitements */}
+        <div className="bg-white p-6 rounded-2xl shadow-md">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Derniers traitements</h2>
+          <ul className="space-y-3">
+            {patient.traitements.map((traitement, index) => (
+              <li
+                key={index}
+                className="flex justify-between items-center border-b border-gray-200 pb-2"
+              >
+                <span className="text-gray-700">{traitement.nom}</span>
+                <span className="text-sm text-gray-500">{traitement.date}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

@@ -10,6 +10,9 @@ import DoctorSignup from "./views/register/Medecin";
 import PatientDashboard from "./views/dashboard/client";
 import DoctorProfile from "./views/profil/Doctor";
 import Chat from "./components/chat";
+import PatientRdv from "./views/dashboard/client/Rdv";
+import PatientSearch from "./views/dashboard/client/Search";
+import DoctorDashboard from "./views/dashboard/DoctorDashboard";
 
 function App() {
   return (
@@ -20,11 +23,14 @@ function App() {
           <main className="flex-grow">
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/dashboard/patient" element={<PatientDashboard />} />
-              <Route path="/profile/doctor" element={<DoctorProfile />} />
-              <Route path="/chat" element={<Chat />} />
-              <Route path="/signup-individu" element={<PatientSignup />} />
-              <Route path="/signup-doctor" element={<DoctorSignup />} />
+              <Route path="/dashboard" element={<PatientDashboard />} />
+              <Route path="/rdv" element={<PatientRdv />} />
+              <Route path="/search" element={<PatientSearch />} />
+              <Route path="/profile/:id" element={<DoctorProfile />} />
+              {/* <Route path="/chat" element={<Chat />} /> */}
+              <Route path="/register" element={<PatientSignup />} />
+              <Route path="/docteur/register" element={<DoctorSignup />} />
+              <Route path="/docteur/dashboard" element={<DoctorDashboard />} />
               <Route path="/login" element={<Login />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

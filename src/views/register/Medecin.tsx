@@ -3,11 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/commons/Button';
 import Checkbox from '../../components/commons/Checkbox';
 import Input from '../../components/commons/Input';
-import FileInput from '../../components/commons/FileInput';
 import Select from '../../components/commons/Select';
 import phoneImage from '../../assets/phone.png';
 import logoImage from '../../assets/logo.png';
-
 import { post } from '../../services/apiService';
 import { useAuthStore } from '../../store/authStore';
 
@@ -17,54 +15,64 @@ const DoctorSignup: React.FC = () => {
 
   const [form, setForm] = useState({
     email: '',
-    username: '',
-    password: '',
-    first_name: '',
-    last_name: '',
-    date_naissance: '',
-    sexe: 'M',
-    telephone: '',
-    street: '',
-    city: '',
-    postal_code: '',
-    country: '',
-    longitude: 0,
-    latitude: 0,
-    role: ['doctor'],
+    specialties: '',
+    description: '',
+    disponibilite: {
+      lundi: { available: false },
+      mardi: { available: false },
+      mercredi: { available: false },
+      jeudi: { available: false },
+      vendredi: { available: false },
+      samedi: { available: false },
+      dimanche: { available: false },
+    }
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+  };
+
+  const toggleDayAvailability = (day: keyof typeof form.disponibilite) => {
+    setForm(prev => ({
+      ...prev,
+      disponibilite: {
+        ...prev.disponibilite,
+        [day]: {
+          ...prev.disponibilite[day],
+          available: !prev.disponibilite[day].available,
+          morning: {
+            start: '09:00',
+            end: '12:00'
+          },
+          afternoon: {
+            start: '14:00',
+            end: '17:00'
+          }
+        }
+      }
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    const payload = {
-      ...form,
-      address: {
-        street: form.street,
-        city: form.city,
-        postal_code: form.postal_code,
-        country: form.country,
-      },
-      longitude: parseFloat(form.longitude.toString()),
-      latitude: parseFloat(form.latitude.toString()),
-    };
-
     try {
-      const res = await post(
-        '/auth/register',
-        payload,
-        import.meta.env.VITE_API_URL,
-        false
-      );
+      const payload = {
+        id: "354654s3d5435sd",
+        email: form.email,
+        specialties: [form.specialties],
+        description: form.description,
+        disponibilite: form.disponibilite,
+        rating: 0
+      };
 
-      console.log(res);
+      const res = await post('/doctors', payload);
+
       setUser(res.user);
       setToken(res.token);
-      navigate('/dashboard');
+      navigate('/docteur/dashboard');
     } catch (error) {
       alert("Erreur lors de l'inscription. Vérifie les champs.");
       console.error(error);
@@ -74,75 +82,78 @@ const DoctorSignup: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex">
-      <div className="relative flex-1 overflow-hidden">
-        <img src={phoneImage} alt="Illustration" className="h-full w-full object-cover" />
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
+      <div className="hidden md:flex flex-1 items-center justify-center">
+        <img src={phoneImage} alt="Illustration" className="w-full h-full object-cover" />
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-6 md:px-20 relative">
-        <img src={logoImage} alt="LocDoc" className="absolute top-6 left-6 h-8 md:h-10 z-20" />
+      <div className="flex-1 flex items-center justify-center px-6 py-10 relative">
+        <img src={logoImage} alt="LocDoc" className="absolute top-6 left-6 h-10" />
 
-        <div className="bg-white bg-opacity-60 backdrop-blur-md p-8 rounded-2xl shadow-lg w-full max-w-lg transform -translate-x-12 z-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-secondary mb-2">
-            Compte <span className="text-green-600">Médecin!</span>
-          </h1>
-          <p className="text-gray-700 mb-6">
-            Ajoutez gratuitement votre compte médecin sur LocDoc
-          </p>
+        <div className="bg-white bg-opacity-80 backdrop-blur-lg p-8 rounded-2xl shadow-md w-full max-w-xl">
+          <h1 className="text-4xl font-bold text-blue-700 mb-2">Inscription <span className="text-green-600">Médecin</span></h1>
+          <p className="text-gray-700 mb-6">Remplissez les informations ci-dessous pour créer votre compte.</p>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-800">Informations</h2>
-              <Select
-                placeholder="Spécialité médicale"
-                options={[
-                  { value: 'cardio', label: 'Cardiologie' },
-                  { value: 'dermato', label: 'Dermatologie' },
-                  { value: 'pediatrie', label: 'Pédiatrie' },
-                ]}
-              />
-              <Input type="text" name="username" placeholder="Nom d'utilisateur" value={form.username} onChange={handleChange} />
-              <Input type="text" name="first_name" placeholder="Prénom" value={form.first_name} onChange={handleChange} />
-              <Input type="text" name="last_name" placeholder="Nom" value={form.last_name} onChange={handleChange} />
-              <Input type="date" name="date_naissance" placeholder="Date de naissance" value={form.date_naissance} onChange={handleChange} />
-              <Input type="text" name="sexe" placeholder="Sexe (M/F)" value={form.sexe} onChange={handleChange} />
-              <Input type="text" name="telephone" placeholder="Téléphone" value={form.telephone} onChange={handleChange} />
-              <Input type="password" name="password" placeholder="Mot de passe" value={form.password} onChange={handleChange} />
-              <FileInput placeholder="Uploadez votre pièce d'identité" />
-            </div>
+            <Input
+              name="email"
+              type="email"
+              placeholder="Email professionnel"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
 
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-800">Coordonnées</h2>
-              <Input type="email" name="email" placeholder="Courriel professionnel" value={form.email} onChange={handleChange} />
-              <Input type="text" name="street" placeholder="Nom du cabinet ou du lieu d’exercice" value={form.street} onChange={handleChange} />
+            <Select
+              name="specialties"
+              value={form.specialties}
+              onChange={handleChange}
+              options={[
+                { value: 'cardiologie', label: 'Cardiologie' },
+                { value: 'dermatologie', label: 'Dermatologie' },
+                { value: 'pediatrie', label: 'Pédiatrie' },
+              ]}
+              placeholder="Sélectionnez une spécialité"
+            />
+
+            <textarea
+              name="description"
+              placeholder="Décrivez votre expérience et vos compétences"
+              value={form.description}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={4}
+              required
+            />
+
+            <div>
+              <p className="font-medium text-gray-800 mb-2">Disponibilités :</p>
               <div className="grid grid-cols-2 gap-4">
-                <Input type="text" name="city" placeholder="Ville cabinet" value={form.city} onChange={handleChange} />
-                <Input type="text" name="country" placeholder="Pays" value={form.country} onChange={handleChange} />
+                {Object.keys(form.disponibilite).map((day) => (
+                  <label key={day} className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={form.disponibilite[day as keyof typeof form.disponibilite].available}
+                      onChange={() => toggleDayAvailability(day as keyof typeof form.disponibilite)}
+                      className="form-checkbox text-blue-600"
+                    />
+                    <span className="capitalize">{day}</span>
+                  </label>
+                ))}
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Input type="text" name="postal_code" placeholder="Code postal" value={form.postal_code} onChange={handleChange} />
-                <Input type="text" name="longitude" placeholder="Longitude" value={form.longitude.toString()} onChange={handleChange} />
-                <Input type="text" name="latitude" placeholder="Latitude" value={form.latitude.toString()} onChange={handleChange} />
-              </div>
             </div>
 
-            <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-gray-800">Vérification et Sécurité</h2>
-              <FileInput placeholder="Uploadez votre dernier diplôme d'état" />
-              <FileInput placeholder="Uploadez un justificatif professionnel" />
-            </div>
+            <Checkbox
+              name="terms"
+              label="J'accepte les conditions générales d'utilisation"
+              required
+            />
 
-            <div className="flex items-center">
-              <Checkbox label="Je confirme avoir lu et accepté les conditions générales" />
-            </div>
+            <Button type="submit" className="w-full">Créer mon compte</Button>
 
-            <Button type="submit">Créer mon compte Médecin</Button>
-
-            <p className="text-center text-gray-700">
+            <p className="text-center text-sm text-gray-600 mt-4">
               Vous avez déjà un compte ?{' '}
-              <Link to="/login" className="font-semibold underline hover:text-secondary transition">
-                Connectez-vous
-              </Link>
+              <Link to="/login" className="text-blue-600 underline hover:text-blue-800">Connectez-vous</Link>
             </p>
           </form>
         </div>
