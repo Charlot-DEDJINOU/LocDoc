@@ -1,28 +1,53 @@
-import React, { useState } from 'react';
+// src/pages/dashboard/patient/PatientSearch.tsx
+import React, { useEffect, useState } from 'react';
 import Sidebar from '../../../components/dashboard/patient/Sidebar';
+import { get } from '../../../services/apiService';
 
 type Doctor = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  speciality: string;
+  doctor_id: string;
+  first_name: string;
+  last_name: string;
+  specialties: string[];
+  email: string;
+  telephone: string;
+  location: {
+    type: string;
+    coordinates: [number, number];
+  };
 };
-
-const doctorsList: Doctor[] = [
-  { id: '1', firstName: 'Jean', lastName: 'Dupont', speciality: 'Cardiologue' },
-  { id: '2', firstName: 'Aïcha', lastName: 'Bako', speciality: 'Dermatologue' },
-  { id: '3', firstName: 'Emmanuel', lastName: 'Adou', speciality: 'Pédiatre' },
-  { id: '4', firstName: 'Marie', lastName: 'Kouassi', speciality: 'Gynécologue' },
-];
 
 const PatientSearch: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [doctorsList, setDoctorsList] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const filteredDoctors = doctorsList.filter(
-    (doc) =>
-      `${doc.firstName} ${doc.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.speciality.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      setLoading(true);
+      try {
+        const data = await get('/doctors/', import.meta.env.VITE_API_URL);
+
+        console.log(data)
+        setDoctorsList(data);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des docteurs :', error);
+        alert("Impossible de charger les docteurs.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
+  const filteredDoctors = doctorsList.filter((doc) => {
+    const fullName = `${doc.first_name} ${doc.last_name}`.toLowerCase();
+    const specialties = doc.specialties.join(', ').toLowerCase();
+    return (
+      fullName.includes(searchQuery.toLowerCase()) ||
+      specialties.includes(searchQuery.toLowerCase())
+    );
+  });
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
@@ -45,20 +70,27 @@ const PatientSearch: React.FC = () => {
         </div>
 
         {/* Liste des docteurs */}
-        {filteredDoctors.length === 0 ? (
+        {loading ? (
+          <p className="text-gray-500">Chargement en cours...</p>
+        ) : filteredDoctors.length === 0 ? (
           <p className="text-gray-500">Aucun docteur trouvé.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredDoctors.map((doctor) => (
               <div
-                key={doctor.id}
+                key={doctor.doctor_id}
                 className="bg-white shadow-md rounded-xl p-5 hover:shadow-lg transition-all"
               >
                 <h2 className="text-xl font-bold text-gray-800">
-                  Dr. {doctor.firstName} {doctor.lastName}
+                  Dr. {doctor.first_name} {doctor.last_name}
                 </h2>
-                <p className="text-blue-600 font-medium">{doctor.speciality}</p>
-                <p className="text-sm text-gray-500 mt-2">Disponible pour consultation</p>
+                <p className="text-blue-600 font-medium capitalize">
+                  {doctor.specialties.join(', ')}
+                </p>
+                <p className="text-sm text-gray-500 mt-2">
+                  📧 {doctor.email}<br />
+                  📞 {doctor.telephone}
+                </p>
               </div>
             ))}
           </div>

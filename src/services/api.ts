@@ -25,7 +25,7 @@ const api = async (
     isFileUpload = false,
   }: ApiOptions = {}
 ): Promise<any> => {
-  const fullUrl = new URL(baseURL + url);
+  const fullUrl = new URL(import.meta.env.VITE_API_URL + url);
 
   if (params) {
     Object.entries(params).forEach(([key, value]) =>
