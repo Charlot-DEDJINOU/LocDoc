@@ -9,23 +9,38 @@ import {
   SearchCheck,
   Star,
 } from 'lucide-react';
+import { useAuthStore } from '../../../store/authStore'; // <-- ajout
 
 interface MenuItem {
   icon: React.ElementType;
   label: string;
   route: string;
+  requiresDoctorRole?: boolean;
 }
 
 const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuthStore(); // <-- accès au user
 
   const menuItems: MenuItem[] = [
     { icon: Star, label: 'Dashboard', route: '/dashboard' },
-    { icon: Users, label: 'Je suis docteur', route: '/docteur/register' },
+    {
+      icon: Users,
+      label: 'Je suis docteur',
+      route: '/docteur/register',
+      requiresDoctorRole: true, // <-- condition pour affichage
+    },
     { icon: SearchCheck, label: 'Rechercher un docteur', route: '/search' },
     { icon: Calendar, label: 'Prendre RDV', route: '/rdv' },
   ];
+
+  const filteredMenuItems = menuItems.filter((item) => {
+    if (item.requiresDoctorRole) {
+      return user?.role?.includes('doctor');
+    }
+    return true;
+  });
 
   return (
     <div className="w-72 min-h-screen bg-white border-r border-gray-200 flex flex-col">
@@ -38,7 +53,7 @@ const Sidebar: React.FC = () => {
       {/* Navigation */}
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
         <nav className="space-y-1">
-          {menuItems.map((item, idx) => {
+          {filteredMenuItems.map((item, idx) => {
             const isActive = location.pathname === item.route;
             const Icon = item.icon;
             return (

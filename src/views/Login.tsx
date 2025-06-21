@@ -1,3 +1,4 @@
+// src/pages/Login.tsx
 import React, { useState } from 'react';
 import Button from '../components/commons/Button';
 import Checkbox from '../components/commons/Checkbox';
@@ -25,19 +26,29 @@ const Login: React.FC = () => {
         '/auth/login',
         { email, password },
         import.meta.env.VITE_API_URL,
-        false // Pas besoin de token ici
+        false
       );
 
-      console.log(res);
-      // En supposant que res = { token, user }
-      setUser(res.user);
-      setToken(res.token);
+      console.log(res, "le resp de l'api. . ")
+      // Exemple de structure renvoyée par l’API
+      const userPayload = {
+        id: res.user_id,
+        name: `${res.nom} ${res.prenom}`,
+        email: email,
+        role: res.role,
+        telephone: res.telephone,
+        username: res.username,
+      };
 
-      // Redirection post-login
-      navigate('/dashboard');
+
+      console.log(userPayload, "ok boss ")
+      setUser(userPayload);
+      setToken(res.access_token);
+
+        navigate('/dashboard');
     } catch (error) {
-      alert("Erreur lors de la connexion. Vérifie ton email ou mot de passe.");
-      console.error(error);
+      console.error('Erreur lors de la connexion:', error);
+      alert("Email ou mot de passe incorrect.");
     } finally {
       setLoading(false);
     }
@@ -45,10 +56,12 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex">
+      {/* Illustration côté gauche */}
       <div className="hidden md:flex flex-1 items-center justify-center bg-white">
         <img src={phoneImage} alt="Illustration" className="w-3/4 max-w-sm" />
       </div>
 
+      {/* Formulaire de connexion */}
       <div className="flex-1 flex flex-col items-center justify-center bg-gradient-to-r from-white to-secondary px-6 md:px-20 relative">
         <img src={logoImage} alt="LocDoc" className="absolute top-8 left-8 h-8" />
 
@@ -59,8 +72,22 @@ const Login: React.FC = () => {
           <p className="text-gray-700 mb-6">Nous sommes ravis de vous revoir :)</p>
 
           <form className="space-y-4" onSubmit={handleLogin}>
-            <Input icon={HiMail} type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <Input icon={HiLockClosed} type="password" placeholder="Mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Input
+              icon={HiMail}
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Input
+              icon={HiLockClosed}
+              type="password"
+              placeholder="Mot de passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
 
             <div className="flex items-center justify-between">
               <Checkbox label="Se souvenir de moi" />

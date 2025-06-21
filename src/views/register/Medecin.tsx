@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/commons/Button';
 import Checkbox from '../../components/commons/Checkbox';
@@ -11,7 +11,7 @@ import { useAuthStore } from '../../store/authStore';
 
 const DoctorSignup: React.FC = () => {
   const navigate = useNavigate();
-  const { setUser, setToken, setLoading } = useAuthStore();
+  const { user, setUser, setToken, setLoading } = useAuthStore();
 
   const [form, setForm] = useState({
     email: '',
@@ -27,6 +27,13 @@ const DoctorSignup: React.FC = () => {
       dimanche: { available: false },
     }
   });
+
+  useEffect(() => {
+    // Pré-remplissage de l'email si dispo dans le store
+    if (user?.email) {
+      setForm((prev) => ({ ...prev, email: user.email }));
+    }
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -59,8 +66,13 @@ const DoctorSignup: React.FC = () => {
     setLoading(true);
 
     try {
+      if (!user?.id) {
+        alert("Impossible de récupérer l'ID utilisateur.");
+        return;
+      }
+
       const payload = {
-        id: "685628cadda795498113ae53",
+        id: user.id, // récupéré automatiquement depuis le store
         email: form.email,
         specialties: [form.specialties],
         description: form.description,
@@ -70,9 +82,9 @@ const DoctorSignup: React.FC = () => {
 
       const res = await post('/doctors/', payload, import.meta.env.VITE_API_URL, false);
 
-      console.log(res)
-      setUser(res.user);
-      setToken(res.token);
+      console.log(res);
+      setUser({ ...user, ...res.user }); // met à jour user si besoin
+      if (res.token) setToken(res.token);
       navigate('/docteur/dashboard');
     } catch (error) {
       alert("Erreur lors de l'inscription. Vérifie les champs.");
@@ -103,6 +115,7 @@ const DoctorSignup: React.FC = () => {
               value={form.email}
               onChange={handleChange}
               required
+              disabled // champ non éditable
             />
 
             <Select

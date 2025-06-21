@@ -9,7 +9,7 @@ import { useAuthStore } from '../../store/authStore';
 
 const PatientSignup: React.FC = () => {
   const navigate = useNavigate();
-  const { setUser, setToken, setLoading } = useAuthStore();
+  const { setLoading } = useAuthStore();
 
   const [formData, setFormData] = useState({
     nom: '',
@@ -21,13 +21,15 @@ const PatientSignup: React.FC = () => {
     motDePasse: '',
     confirmMotDePasse: '',
     accepteConditions: false,
-    role: 'patient', // 👈 Ajout du rôle
+    role: 'patient',
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -66,15 +68,18 @@ const PatientSignup: React.FC = () => {
     try {
       setLoading(true);
       const res = await post('/auth/register', payload, import.meta.env.VITE_API_URL, false);
-      console.log(res)
-      setUser(res.user);
-      setToken(res.token);
+
+      console.log(res, "le resp de l'api. . ")
+      
 
       if (formData.role === 'doctor') {
-        navigate('/docteur/register');
+        alert("va dans ton email pour confirmer la creation de ton compte. puis reviens pour remplir les infos sur ton statut de docteur")
+        navigate('/login');
       } else {
+        alert(res.message)
         navigate('/login');
       }
+
     } catch (error) {
       console.error('Erreur lors de l’inscription:', error);
       alert("Une erreur est survenue pendant l’inscription.");
@@ -95,7 +100,7 @@ const PatientSignup: React.FC = () => {
       <div className="flex items-center min-h-screen px-4 py-8">
         <div className="max-w-6xl mx-auto w-full">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="hidden lg:block">{/* illustration possible */}</div>
+            <div className="hidden lg:block">{/* Illustration */}</div>
 
             <div className="bg-white bg-opacity-90 rounded-3xl p-8 shadow-2xl backdrop-blur-sm">
               <div className="text-center mb-8">
@@ -108,6 +113,7 @@ const PatientSignup: React.FC = () => {
               </div>
 
               <div className="space-y-6">
+                {/* Identité */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-700 mb-4">Identité</h3>
                   <div className="space-y-4">
@@ -154,6 +160,7 @@ const PatientSignup: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Date de naissance */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-700 mb-4">Date de naissance</h3>
                   <input
@@ -166,6 +173,7 @@ const PatientSignup: React.FC = () => {
                   />
                 </div>
 
+                {/* Contacts */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-700 mb-4">Contacts</h3>
                   <div className="space-y-4">
@@ -190,6 +198,7 @@ const PatientSignup: React.FC = () => {
                   </div>
                 </div>
 
+                {/* Type de compte */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-700 mb-4">Type de compte</h3>
                   <select
@@ -204,6 +213,7 @@ const PatientSignup: React.FC = () => {
                   </select>
                 </div>
 
+                {/* Mot de passe */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-700 mb-4">Mot de passe</h3>
                   <div className="space-y-4">

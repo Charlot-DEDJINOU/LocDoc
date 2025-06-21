@@ -1,8 +1,9 @@
 // src/components/Header.tsx
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { User, Bell, Menu, X } from 'lucide-react';
 import logo from '../../assets/logo.png';
+import { useAuthStore } from '../../store/authStore';
 
 type NavItem = {
   name: string;
@@ -21,12 +22,17 @@ const navItemsLoggedIn: NavItem[] = [
 ];
 
 const Header: React.FC = () => {
-  // simulate login state
-  const [isLoggedIn] = useState<boolean>(false);
-  const notificationsCount = 3; // statique pour la démo
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout } = useAuthStore();
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
+  const notificationsCount = 3;
 
-  const navItems = isLoggedIn ? navItemsLoggedIn : navItemsLoggedOut;
+  const navItems = isAuthenticated ? navItemsLoggedIn : navItemsLoggedOut;
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <header className="bg-primary shadow-lg">
@@ -69,8 +75,10 @@ const Header: React.FC = () => {
         <div className="hidden md:flex items-center space-x-4">
           <div className="flex items-center space-x-1 text-gray-700">
             <User className="w-5 h-5" />
-            {isLoggedIn ? (
-              <span className="text-sm font-medium">Jean S.</span>
+            {isAuthenticated ? (
+              <span className="text-sm font-medium">
+                {user?.username || user?.name || 'Profil'}
+              </span>
             ) : (
               <NavLink to="/login" className="text-sm font-medium hover:underline">
                 Se connecter
@@ -78,34 +86,40 @@ const Header: React.FC = () => {
             )}
           </div>
 
-          {isLoggedIn && (
-            <button className="relative p-2">
+          {isAuthenticated && (
+            <button className="relative p-2" aria-label="Notifications">
               <Bell className="w-5 h-5 text-gray-700 hover:text-gray-900" />
-              <span
-                className="
-                  absolute -top-1 -right-1 h-4 w-4
-                  bg-yellow-400 text-gray-800
-                  border-2 border-white
-                  rounded-full
-                  text-xs flex items-center justify-center
-                "
-              >
+              <span className="absolute -top-1 -right-1 h-4 w-4 bg-yellow-400 text-gray-800 border-2 border-white rounded-full text-xs flex items-center justify-center">
                 {notificationsCount}
               </span>
             </button>
           )}
 
-          <NavLink
-            to={isLoggedIn ? '/' : '/register'}
-            className="
-              bg-gradient-to-r from-purple-500 to-blue-400
-              text-white text-sm font-medium
-              px-4 py-2 rounded-full
-              hover:opacity-90 transition
-            "
-          >
-            {isLoggedIn ? 'Se déconnecter' : "S'inscrire"}
-          </NavLink>
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              className="
+                bg-gradient-to-r from-purple-500 to-blue-400
+                text-white text-sm font-medium
+                px-4 py-2 rounded-full
+                hover:opacity-90 transition
+              "
+            >
+              Se déconnecter
+            </button>
+          ) : (
+            <NavLink
+              to="/register"
+              className="
+                bg-gradient-to-r from-purple-500 to-blue-400
+                text-white text-sm font-medium
+                px-4 py-2 rounded-full
+                hover:opacity-90 transition
+              "
+            >
+              S'inscrire
+            </NavLink>
+          )}
         </div>
       </div>
 
@@ -133,13 +147,25 @@ const Header: React.FC = () => {
             ))}
 
             <li className="border-t border-gray-100 mt-2 pt-2">
-              <NavLink
-                to={isLoggedIn ? '/logout' : '/signup'}
-                className="block text-base py-2 px-3 rounded-md text-white bg-gradient-to-r from-purple-500 to-blue-400 text-center"
-                onClick={() => setMobileOpen(false)}
-              >
-                {isLoggedIn ? 'Se déconnecter' : "S'inscrire"}
-              </NavLink>
+              {isAuthenticated ? (
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setMobileOpen(false);
+                  }}
+                  className="block w-full text-base py-2 px-3 rounded-md text-white bg-gradient-to-r from-purple-500 to-blue-400 text-center"
+                >
+                  Se déconnecter
+                </button>
+              ) : (
+                <NavLink
+                  to="/signup"
+                  className="block text-base py-2 px-3 rounded-md text-white bg-gradient-to-r from-purple-500 to-blue-400 text-center"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  S'inscrire
+                </NavLink>
+              )}
             </li>
           </ul>
         </nav>
