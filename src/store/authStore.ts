@@ -8,6 +8,7 @@ interface User {
   role?: string[];
   telephone?: string;
   username?: string;
+  specialitie?: string;
 }
 
 interface AuthState {

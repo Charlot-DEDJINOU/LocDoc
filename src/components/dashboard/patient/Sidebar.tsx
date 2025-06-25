@@ -8,6 +8,7 @@ import {
   Menu,
   SearchCheck,
   Star,
+  UsersIcon,
 } from 'lucide-react';
 import { useAuthStore } from '../../../store/authStore'; // <-- ajout
 
@@ -28,11 +29,12 @@ const Sidebar: React.FC = () => {
     {
       icon: Users,
       label: 'Je suis docteur',
-      route: '/docteur/register',
+      route: user?.specialitie ? '/docteur/dashbaord' : '/docteur/register',
       requiresDoctorRole: true, // <-- condition pour affichage
     },
     { icon: SearchCheck, label: 'Rechercher un docteur', route: '/search' },
     { icon: Calendar, label: 'Prendre RDV', route: '/rdv' },
+    { icon: UsersIcon, label: 'Messagerie', route: '/chat' },
   ];
 
   const filteredMenuItems = menuItems.filter((item) => {

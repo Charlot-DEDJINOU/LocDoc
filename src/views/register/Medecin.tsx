@@ -83,7 +83,7 @@ const DoctorSignup: React.FC = () => {
       const res = await post('/doctors/', payload, import.meta.env.VITE_API_URL, false);
 
       console.log(res);
-      setUser({ ...user, ...res.user }); // met à jour user si besoin
+      setUser({ ...user, specialitie: form.specialties }); // met à jour user si besoin
       if (res.token) setToken(res.token);
       navigate('/docteur/dashboard');
     } catch (error) {

@@ -159,7 +159,7 @@ const Header: React.FC = () => {
                 </button>
               ) : (
                 <NavLink
-                  to="/signup"
+                  to="/register"
                   className="block text-base py-2 px-3 rounded-md text-white bg-gradient-to-r from-purple-500 to-blue-400 text-center"
                   onClick={() => setMobileOpen(false)}
                 >

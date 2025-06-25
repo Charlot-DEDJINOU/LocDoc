@@ -13,6 +13,7 @@ import Chat from "./components/chat";
 import PatientRdv from "./views/dashboard/client/Rdv";
 import PatientSearch from "./views/dashboard/client/Search";
 import DoctorDashboard from "./views/dashboard/DoctorDashboard";
+import ChatMessagerie from "./views/dashboard/client/ChatMessagerie";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="/dashboard" element={<PatientDashboard />} />
               <Route path="/rdv" element={<PatientRdv />} />
               <Route path="/search" element={<PatientSearch />} />
+              <Route path="/chat" element={<ChatMessagerie />} />
               <Route path="/profile/:id" element={<DoctorProfile />} />
               {/* <Route path="/chat" element={<Chat />} /> */}
               <Route path="/register" element={<PatientSignup />} />
